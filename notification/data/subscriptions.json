@@ -1,0 +1,11 @@
+[
+  {
+    "userId": 1,
+    "itemId": 101,
+    "channels": [
+      "email",
+      "sms"
+    ],
+    "status": "NOTIFIED"
+  }
+]
