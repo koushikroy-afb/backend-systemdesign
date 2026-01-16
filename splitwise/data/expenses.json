@@ -1,0 +1,11 @@
+[
+  {
+    "paidBy": "A",
+    "amount": 300,
+    "participants": [
+      "A",
+      "B",
+      "C"
+    ]
+  }
+]
