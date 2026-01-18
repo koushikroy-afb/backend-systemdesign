@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bookstore>
+    <book category="fantasy">
+        <title lang="en">A Song of Ice and Fire</title>
+        <author>George R. R. Martin</author>
+        <year>1996</year>
+        <price>29.99</price>
+    </book>
+    <book category="computer">
+        <title lang="en">MSXML3: A Comprehensive Guide</title>
+        <author>Tim O'Brien</author>
+        <year>2000</year>
+        <price>36.95</price>
+    </book>
+</bookstore>
