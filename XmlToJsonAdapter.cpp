@@ -1,36 +1,53 @@
 #include "XmlToJsonAdapter.h"
-#include <fstream>
-#include <sstream>
 
-XmlToJsonAdapter::XmlToJsonAdapter(const std::string& file) {
-    xmlFile = file;
+using namespace tinyxml2;
+
+// ✅ CONSTRUCTOR IMPLEMENTATION (THIS WAS THE PROBLEM)
+XmlToJsonAdapter::XmlToJsonAdapter(const std::string& file)
+    : xmlFile(file) {}
+
+// Recursive helper
+nlohmann::json XmlToJsonAdapter::elementToJson(XMLElement* element) {
+    nlohmann::json j;
+
+    // Attributes
+    const XMLAttribute* attr = element->FirstAttribute();
+    while (attr) {
+        j["@"+std::string(attr->Name())] = attr->Value();
+        attr = attr->Next();
+    }
+
+    // Text
+    if (element->GetText()) {
+        j["#text"] = element->GetText();
+    }
+
+    // Children
+    XMLElement* child = element->FirstChildElement();
+    while (child) {
+        j[child->Name()].push_back(elementToJson(child));
+        child = child->NextSiblingElement();
+    }
+
+    return j;
 }
 
 std::string XmlToJsonAdapter::getJson() {
-    // Read entire XML file
-    std::ifstream file(xmlFile);
-    std::stringstream buffer;
-    buffer << file.rdbuf();
-    std::string xml = buffer.str();
+    XMLDocument doc;
+    doc.LoadFile(xmlFile.c_str());
 
-    // Extract FIRST book title
-    int t1 = xml.find("<title") ;
-    t1 = xml.find(">", t1) + 1;
-    int t2 = xml.find("</title>");
-    std::string title = xml.substr(t1, t2 - t1);
+    XMLElement* root = doc.RootElement();          // <bookstore>
+    XMLElement* book = root->FirstChildElement("book"); // first <book>
 
-    // Extract FIRST book author
-    int a1 = xml.find("<author>") + 8;
-    int a2 = xml.find("</author>");
-    std::string author = xml.substr(a1, a2 - a1);
+    const char* title = book->FirstChildElement("title")->GetText();
+    const char* author = book->FirstChildElement("author")->GetText();
 
-    // Create JSON manually
-    std::string json =
-        "{\n"
-        "  \"bookstore\": {\n"
-        "    \"bookname\": \"" + title + " , " + author + "\"\n"
-        "  }\n"
-        "}";
+    nlohmann::json result;
+    result["bookstore"]["bookname"] =
+        std::string(title) + " , " + std::string(author);
 
-    return json;
+    return result.dump(4);
 }
+
+
+
